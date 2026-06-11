@@ -9,6 +9,7 @@
 
 Aplikasi web *Single Page Application* (SPA) interaktif untuk mensimulasikan mesin **Pushdown Automata (PDA)** menggunakan model flowchart grafis (**READ / PUSH / POP**). Proyek ini dirancang secara khusus untuk memenuhi tugas **Praktikum 3 Otomata & Teori Bahasa**.
 Link : [https://darkdrago89.github.io/Praktikum3Otomata/](https://darkdrago89.github.io/Praktikum3Otomata/)
+
 ---
 
 ## 🌟 Fitur Utama
