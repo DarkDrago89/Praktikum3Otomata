@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDA Flowchart Simulator — Otomata Praktikum 3</title>
+    <!-- Import Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --bg2: rgba(20, 26, 46, 0.65);
+            --bg3: rgba(30, 39, 69, 0.8);
+            --bg4: rgba(40, 52, 93, 0.95);
+            --border: rgba(58, 74, 112, 0.35);
+            --border2: rgba(91, 141, 238, 0.5);
+            --blue: #3b82f6;
+            --green: #10b981;
+            --red: #ef4444;
+            --amber: #f59e0b;
+            --purple: #8b5cf6;
+            --teal: #06b6d4;
+            --text: #f3f4f6;
+            --text2: #9ca3af;
+            --text3: #6b7280;
+            --mono: 'JetBrains Mono', 'Courier New', monospace;
+            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #151e3d 0%, #0b0f19 80%);
+            color: var(--text);
+            font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(120deg, #fff 40%, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo p {
+            font-size: 11px;
+            color: var(--text2);
+            margin-top: 1px;
+            letter-spacing: 0.3px;
+        }
+
+        .hbadge {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text2);
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 22, 42, 0.5);
+            padding: 0 32px;
+            backdrop-filter: blur(8px);
+        }
+
+        .tab {
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text3);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all .25s ease;
+            user-select: none;
+            letter-spacing: 0.3px;
+        }
+
+        .tab:hover {
+            color: var(--text2);
+        }
+            color: var(--text2);
+        }
+
+        .tab.active {
+            color: var(--blue);
+            border-bottom-color: var(--blue);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .wrap {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 20px 28px;
+        }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .grid3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+        }
+
+        .panel {
+            background: var(--bg2);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: rgba(91, 141, 238, 0.25);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+        }
+
+        .ph {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(18, 24, 43, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pt {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .pb {
+            padding: 20px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text2);
+            display: block;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            background: rgba(15, 22, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 14px;
+            padding: 10px 14px;
+            outline: none;
+            transition: all .25s ease;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--blue);
+            background: rgba(15, 22, 42, 0.9);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        textarea {
+            resize: vertical;
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+
+        .fr {
+            margin-bottom: 12px;
+        }
+
+        .ir2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .ir3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 7px 16px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-blue {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        .btn-blue:hover {
+            background: #4a7de0;
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: #071a0f;
+        }
+
+        .btn-green:hover {
+            background: #35b87e;
+        }
+
+        .btn-red {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-red:hover {
+            background: #d95050;
+        }
+
+        .btn-amber {
+            background: var(--amber);
+            color: #1a0d00;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text2);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg3);
+            color: var(--text);
+        }
+
+        .btn-sm {
+            padding: 5px 11px;
+            font-size: 11px;
+        }
+
+        .btn-xs {
+            padding: 3px 8px;
+            font-size: 10px;
+            border-radius: 5px;
+        }
+
+        .brow {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: var(--mono);
+        }
+
+        .tblue {
+            background: rgba(91, 141, 238, .15);
+            color: #7aaef5;
+            border: 1px solid rgba(91, 141, 238, .3);
+        }
+
+        .tgreen {
+            background: rgba(62, 207, 142, .15);
+            color: #52d99f;
+            border: 1px solid rgba(62, 207, 142, .3);
+        }
+
+        .tamber {
+            background: rgba(245, 166, 35, .15);
+            color: #f7b845;
+            border: 1px solid rgba(245, 166, 35, .3);
+        }
+
+        .tred {
+            background: rgba(240, 108, 108, .15);
+            color: #f48080;
+            border: 1px solid rgba(240, 108, 108, .3);
+        }
+
+        .tgray {
+            background: rgba(150, 160, 200, .1);
+            color: var(--text2);
+            border: 1px solid var(--border);
+        }
+
+        .verdict {
+            border-radius: 12px;
+            padding: 18px 22px;
+            text-align: center;
+            display: none;
+            margin-top: 14px;
+        }
+
+        .verdict.show {
+            display: block;
+        }
+
+        .v-acc {
+            background: rgba(62, 207, 142, .08);
+            border: 1.5px solid rgba(62, 207, 142, .4);
+        }
+
+        .v-rej {
+            background: rgba(240, 108, 108, .08);
+            border: 1.5px solid rgba(240, 108, 108, .4);
+        }
+
+        .v-icon {
+            font-size: 36px;
+            margin-bottom: 6px;
+        }
+
+        .v-title {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .v-acc .v-title {
+            color: var(--green);
+        }
+
+        .v-rej .v-title {
+            color: var(--red);
+        }
+
+        .v-sub {
+            font-size: 12px;
+            color: var(--text2);
+            margin-top: 5px;
+        }
+
+        .tape {
+            display: flex;
+            align-items: center;
+            background: rgba(15, 22, 42, 0.65);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+            gap: 6px;
+            margin-bottom: 16px;
+            min-height: 68px;
+        }
+
+        .tc {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+            font-weight: 700;
+            font-size: 16px;
+            border: 2px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .tc.done {
+            background: rgba(30, 39, 69, 0.3);
+            border-color: rgba(58, 74, 112, 0.3);
+            color: var(--text3);
+            text-decoration: line-through;
+            transform: scale(0.9);
+            opacity: 0.5;
+        }
+
+        .tc.pending {
+            background: rgba(30, 39, 69, 0.6);
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        .tc.cur {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.35) 100%);
+            border-color: var(--amber);
+            color: #fff;
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+            text-shadow: 0 0 6px rgba(255,255,255,0.6);
+            z-index: 2;
+        }
+
+        .stack-container-wrapper {
+            position: relative;
+            background: rgba(30, 39, 69, 0.2);
+            border-radius: 20px 20px 24px 24px;
+            padding: 4px;
+            border: 1px solid rgba(58, 74, 112, 0.4);
+        }
+
+        .stack-rim {
+            height: 12px;
+            background: linear-gradient(90deg, rgba(58, 74, 112, 0.8) 0%, rgba(91, 141, 238, 0.8) 50%, rgba(58, 74, 112, 0.8) 100%);
+            border-radius: 24px 24px 0 0;
+            border: 1.5px solid rgba(91, 141, 238, 0.6);
+            box-shadow: 0 4px 10px rgba(91, 141, 238, 0.2);
+        }
+
+        .stack-viz {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 6px;
+            min-height: 250px;
+            justify-content: flex-start;
+            padding: 20px 12px;
+            background: linear-gradient(180deg, rgba(20, 26, 46, 0.4) 0%, rgba(30, 39, 69, 0.8) 100%);
+            border: 2px solid rgba(58, 74, 112, 0.5);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .si {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.25) 100%);
+            border: 1.5px solid rgba(91, 141, 238, 0.6);
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-family: var(--mono);
+            font-weight: 700;
+            font-size: 14px;
+            color: #fff;
+            min-width: 65px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            animation: pi .25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        .si:first-of-type {
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.35) 0%, rgba(59, 130, 246, 0.35) 100%);
+        }
+
+        .sb {
+            background: var(--bg4);
+            border: 1.5px dashed var(--border2);
+            border-radius: 8px;
+            padding: 6px 18px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text3);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pi {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pi {
+            from {
+                opacity: 0;
+                transform: translateY(-6px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .tlog {
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            max-height: 260px;
+            overflow-y: auto;
+            font-family: var(--mono);
+            font-size: 11px;
+        }
+
+        .trow {
+            display: grid;
+            padding: 5px 10px;
+            border-bottom: 1px solid rgba(42, 50, 80, .6);
+            align-items: center;
+        }
+
+        .trow:hover {
+            background: var(--bg2);
+        }
+
+        .trow:last-child {
+            border-bottom: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 3px;
+        }
+
+        hr.div {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 14px 0;
+        }
+
+        .ibox {
+            background: rgba(91, 141, 238, .07);
+            border: 1px solid rgba(91, 141, 238, .25);
+            border-radius: 8px;
+            padding: 10px 13px;
+            font-size: 12px;
+            color: var(--text2);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .ibox strong {
+            color: var(--blue);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 24px;
+            color: var(--text3);
+            font-size: 12px;
+        }
+
+        .empty .ei {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .step-ctrl {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .step-prog {
+            flex: 1;
+            height: 5px;
+            background: var(--bg4);
+            border-radius: 3px;
+            overflow: hidden;
+            min-width: 60px;
+        }
+
+        .step-bar {
+            height: 100%;
+            background: var(--blue);
+            border-radius: 3px;
+            transition: width .3s;
+        }
+
+        .bres {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 11px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-size: 12px;
+            font-family: var(--mono);
+        }
+
+        .bacc {
+            background: rgba(62, 207, 142, .07);
+            border: 1px solid rgba(62, 207, 142, .25);
+        }
+
+        .brej {
+            background: rgba(240, 108, 108, .07);
+            border: 1px solid rgba(240, 108, 108, .25);
+        }
+
+        .pgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .pcard {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .pcard:hover {
+            border-color: var(--blue);
+            background: var(--bg4);
+        }
+
+        .pcard h4 {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .pcard p {
+            font-size: 11px;
+            color: var(--text2);
+            line-height: 1.5;
+        }
+
+        .pcard .pf {
+            font-family: var(--mono);
+            color: var(--amber);
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        @media(max-width:900px) {
+
+            .grid2,
+            .grid3,
+            .pgrid {
+                grid-template-columns: 1fr;
+            }
+
+            .wrap {
+                padding: 14px;
+            }
+
+            .tabs {
+                padding: 0 14px;
+            }
+
+            header {
+                padding: 12px 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon">∂</div>
+            <div>
+                <h1>PDA Flowchart Simulator</h1>
+                <p>Pushdown Automata — Visual Flowchart Model · Praktikum Otomata 3</p>
+            </div>
+        </div>
+        <span class="hbadge">⚙ Flowchart PDA</span>
+    </header>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('sim')">🔬 Simulator</div>
+        <div class="tab" onclick="switchTab('builder')">🛠 Flowchart Builder</div>
+        <div class="tab" onclick="switchTab('batch')">📋 Batch Test</div>
+        <div class="tab" onclick="switchTab('theory')">📖 Teori PDA</div>
+    </div>
+
+    <!-- SIMULATOR -->
+    <div id="tab-sim" class="tab-panel active">
+        <div class="wrap">
+            <div class="grid2">
+                <div>
+                    <div class="panel" style="margin-bottom:16px">
+                        <div class="ph"><span class="pt"><span class="dot" style="background:var(--blue)"></span>Input
+                                String</span><span style="font-size:11px;color:var(--text3)" id="charCtr">0
+                                karakter</span></div>
+                        <div class="pb">
+                            <div class="fr">
+                                <label>Masukkan string untuk diuji PDA</label>
+                                <input type="text" id="inputStr"
+                                    style="font-size:22px;letter-spacing:5px;font-family:var(--mono);font-weight:700;text-align:center;padding:12px"
+                                    placeholder="aXa" oninput="onStrChange()"
+                                    onkeydown="if(event.key==='Enter')runSim()">
+                            </div>
+                            <div id="tapeWrap" style="display:none">
+                                <div
+                                    style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:7px">
+                                    Pita Input</div>
+                                <div class="tape" id="tapeViz"></div>
+                            </div>
+                            <div class="brow">
+                                <button class="btn btn-green" onclick="runSim()">▶ Jalankan</button>
+                                <button class="btn btn-amber" onclick="stepInit()">⏭ Step-by-Step</button>
+                                <button class="btn btn-ghost" onclick="resetSim()">↺ Reset</button>
+                            </div>
+                            <div class="step-ctrl" id="stepCtrl" style="display:none">
+                                <button class="btn btn-ghost btn-sm" onclick="stepBack()" id="btnBack">◀</button>
+                                <button class="btn btn-blue btn-sm" onclick="stepFwd()" id="btnFwd">▶ Next</button>
+                                <button class="btn btn-ghost btn-sm" onclick="stepAuto()">⚡ Auto</button>
+                                <div class="step-prog">
+                                    <div class="step-bar" id="stepBar"></div>
+                                </div>
+                                <span style="font-size:11px;color:var(--text3)" id="stepLbl">0/0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="verdict" id="verdict">
+                        <div class="v-icon" id="vIcon"></div>
+                        <div class="v-title" id="vTitle"></div>
+                        <div class="v-sub" id="vSub"></div>
+                    </div>
+                    <div class="panel" style="margin-top:16px">
+                        <div class="ph"><span class="pt"><span class="dot" style="background:var(--purple)"></span>Stack
+                                & State</span><span style="font-size:10px;color:var(--text3)"
+                                id="stackCtr">kosong</span></div>
+                        <div class="pb">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                                <div>
+                                    <div
+                                        style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:6px">
+                                        STACK (TOP ↑)</div>
+                                    <div class="stack-container-wrapper">
+                                        <div class="stack-rim"></div>
+                                        <div class="stack-viz" id="stackViz">
+                                            <div class="sb">⊥ bottom</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div
+                                        style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:6px">
+                                        NODE AKTIF</div>
+                                    <div style="text-align:center;padding:14px">
+                                        <div style="font-size:26px;font-weight:800;color:var(--blue)" id="activeNode">—
+                                        </div>
+                                        <div style="font-size:10px;color:var(--text3);margin-top:3px"
+                                            id="activeNodeLbl">belum dimulai</div>
+                                    </div>
+                                    <div
+                                        style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:6px">
+                                        INPUT TERSISA</div>
+                                    <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--amber);text-align:center;padding:8px;background:var(--bg);border-radius:6px;border:1px solid var(--border);letter-spacing:4px"
+                                        id="remainInput">—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="panel" style="margin-bottom:16px">
+                        <div class="ph"><span class="pt"><span class="dot"
+                                    style="background:var(--amber)"></span>Flowchart PDA</span><button
+                                class="btn btn-ghost btn-xs" onclick="renderFlowSim()">🔄</button></div>
+                        <div class="pb" style="padding:8px"><canvas id="simCanvas" height="320"
+                                style="width:100%;background:var(--bg);border-radius:6px;border:1px solid var(--border)"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="ph"><span class="pt"><span class="dot"
+                                    style="background:var(--green)"></span>Execution Trace</span><button
+                                class="btn btn-ghost btn-xs" onclick="clearTrace()">🗑</button></div>
+                        <div class="pb" style="padding:0">
+                            <div class="tlog" id="traceLog">
+                                <div class="empty">
+                                    <div class="ei">🔍</div>Jalankan PDA untuk melihat trace
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUILDER -->
+    <div id="tab-builder" class="tab-panel">
+        <div class="wrap">
+            <div class="panel" style="margin-bottom:18px">
+                <div class="ph"><span class="pt"><span class="dot" style="background:var(--amber)"></span>🚀 Preset
+                        PDA</span></div>
+                <div class="pb">
+                    <div class="pgrid">
+                        <div class="pcard" onclick="loadPreset('palindrome')">
+                            <h4>🔁 Palindrome sXsᴿ</h4>
+                            <p>Sesuai diagram pada soal — push saat baca s, pop saat baca sᴿ</p>
+                            <div class="pf">w = sXsᴿ, s ∈ {a,b}*</div>
+                        </div>
+                        <div class="pcard" onclick="loadPreset('anbn')">
+                            <h4>∑ aⁿbⁿ</h4>
+                            <p>Push A untuk setiap a, pop A untuk setiap b</p>
+                            <div class="pf">L = {aⁿbⁿ | n ≥ 1}</div>
+                        </div>
+                        <div class="pcard" onclick="loadPreset('balanced')">
+                            <h4>⚖ Kurung Seimbang</h4>
+                            <p>Push saat '(', pop saat ')'</p>
+                            <div class="pf">L = {(ⁿ)ⁿ | n ≥ 0}</div>
+                        </div>
+                        <div class="pcard" onclick="loadPreset('wcwr')">
+                            <h4>🪞 wcwᴿ</h4>
+                            <p>Push w, baca c sebagai pivot, pop wᴿ</p>
+                            <div class="pf">L = {wcwᴿ | w ∈ {a,b}⁺}</div>
+                        </div>
+                        <div class="pcard" onclick="loadPreset('anbncn')">
+                            <h4>∑ aⁿbⁿcⁿ</h4>
+                            <p>Push A untuk a, ganti saat b, pop saat c</p>
+                            <div class="pf">L = {aⁿbⁿcⁿ | n ≥ 1}</div>
+                        </div>
+                        <div class="pcard" onclick="clearAll()">
+                            <h4>✏ Buat Sendiri</h4>
+                            <p>Mulai dari kosong, definisikan node dan edge sendiri</p>
+                            <div class="pf">Custom PDA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid2">
+                <div>
+                    <div class="panel" style="margin-bottom:16px">
+                        <div class="ph"><span class="pt"><span class="dot" style="background:var(--blue)"></span>Tambah
+                                Node</span></div>
+                        <div class="pb">
+                            <div class="ibox"><strong>Tipe Node:</strong> START (oval awal) · READ (diamond, baca input)
+                                · PUSH x (kotak, push ke stack) · POP (kotak, pop dari stack) · ACCEPT (oval ganda) ·
+                                REJECT (oval)</div>
+                            <div class="ir2 fr">
+                                <div><label>Tipe Node</label>
+                                    <select id="newNodeType" onchange="onNodeTypeChange()">
+                                        <option value="start">START</option>
+                                        <option value="read" selected>READ</option>
+                                        <option value="push">PUSH</option>
+                                        <option value="pop">POP</option>
+                                        <option value="accept">ACCEPT</option>
+                                        <option value="reject">REJECT</option>
+                                    </select>
+                                </div>
+                                <div><label>ID Node (unik)</label><input type="text" id="newNodeId" placeholder="read1">
+                                </div>
+                            </div>
+                            <div class="fr" id="pushLabelRow"><label id="pushLabelTitle">Simbol yang di-PUSH</label><input type="text"
+                                    id="pushLabel" placeholder="a"></div>
+                            <button class="btn btn-blue" onclick="addNode()">➕ Tambah Node</button>
+                        </div>
+                    </div>
+                    <div class="panel" style="margin-bottom:16px">
+                        <div class="ph"><span class="pt"><span class="dot"
+                                    style="background:var(--purple)"></span>Daftar Node</span><span
+                                style="font-size:10px;color:var(--text3)" id="nodeCtr">0 node</span></div>
+                        <div class="pb" style="max-height:220px;overflow-y:auto" id="nodeList">
+                            <div class="empty">
+                                <div class="ei">📦</div>Belum ada node
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="ph"><span class="pt"><span class="dot"
+                                    style="background:var(--teal,#38bdf8)"></span>Tambah Edge (Panah)</span></div>
+                        <div class="pb">
+                            <div class="ir3 fr">
+                                <div><label>Dari Node</label><input type="text" id="edgeFrom" placeholder="read1"></div>
+                                <div><label>Ke Node</label><input type="text" id="edgeTo" placeholder="push_a"></div>
+                                <div><label>Label (kondisi)</label><input type="text" id="edgeLabel" placeholder="a">
+                                </div>
+                            </div>
+                            <div class="brow">
+                                <button class="btn btn-blue" onclick="addEdge()">➕ Tambah Edge</button>
+                                <button class="btn btn-ghost" onclick="clearEdges()">🗑 Hapus Semua</button>
+                            </div>
+                            <div style="font-size:10px;color:var(--text3);margin-top:8px">Label dari READ: karakter
+                                input (a/b/X/λ). Label kosong = ε-transition.</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="panel" style="margin-bottom:16px">
+                        <div class="ph"><span class="pt"><span class="dot"
+                                    style="background:var(--amber)"></span>Preview Flowchart</span>
+                            <div style="display:flex;gap:6px">
+                                <button class="btn btn-ghost btn-xs" onclick="autoLayout()">⚡ Auto Layout</button>
+                                <button class="btn btn-ghost btn-xs" onclick="renderBuilder()">🔄 Refresh</button>
+                            </div>
+                        </div>
+                        <div class="pb" style="padding:8px"><canvas id="builderCanvas" height="440"
+                                style="width:100%;background:var(--bg);border-radius:6px;border:1px solid var(--border)"></canvas>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="ph"><span class="pt"><span class="dot" style="background:var(--green)"></span>Daftar
+                                Edge</span><span style="font-size:10px;color:var(--text3)" id="edgeCtr">0 edge</span>
+                        </div>
+                        <div class="pb" style="max-height:200px;overflow-y:auto" id="edgeList">
+                            <div class="empty">
+                                <div class="ei">🔗</div>Belum ada edge
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top:16px"><button class="btn btn-green" style="width:100%;padding:12px;font-size:14px"
+                    onclick="saveAndApply()">💾 Simpan & Terapkan ke Simulator</button></div>
+        </div>
+    </div>
+
+    <!-- BATCH -->
+    <div id="tab-batch" class="tab-panel">
+        <div class="wrap">
+            <div class="grid2">
+                <div class="panel">
+                    <div class="ph"><span class="pt"><span class="dot" style="background:var(--blue)"></span>Batch
+                            Test</span></div>
+                    <div class="pb">
+                        <div class="ibox">Masukkan beberapa string sekaligus (satu per baris). Tulis <strong>ε</strong>
+                            untuk string kosong.</div>
+                        <div class="fr"><label>Daftar String</label><textarea id="batchIn" rows="12"
+                                placeholder="aXa&#10;abXba&#10;aabbXbbaa&#10;abXab&#10;ε"></textarea></div>
+                        <div class="brow">
+                            <button class="btn btn-green" onclick="runBatch()">▶ Jalankan Semua</button>
+                            <button class="btn btn-ghost" onclick="document.getElementById('batchIn').value=''">🗑
+                                Clear</button>
+                        </div>
+                        <div id="batchStats" style="display:none;margin-top:12px">
+                            <div class="ir2">
+                                <div
+                                    style="text-align:center;padding:10px;background:rgba(62,207,142,.08);border:1px solid rgba(62,207,142,.3);border-radius:8px">
+                                    <div style="font-size:26px;font-weight:800;color:var(--green)" id="bAcc">0</div>
+                                    <div style="font-size:10px;color:var(--text2)">Accepted</div>
+                                </div>
+                                <div
+                                    style="text-align:center;padding:10px;background:rgba(240,108,108,.08);border:1px solid rgba(240,108,108,.3);border-radius:8px">
+                                    <div style="font-size:26px;font-weight:800;color:var(--red)" id="bRej">0</div>
+                                    <div style="font-size:10px;color:var(--text2)">Rejected</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="ph"><span class="pt"><span class="dot"
+                                style="background:var(--green)"></span>Hasil</span></div>
+                    <div class="pb" style="max-height:500px;overflow-y:auto" id="batchOut">
+                        <div class="empty">
+                            <div class="ei">📋</div>Hasil muncul di sini
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- THEORY -->
+    <div id="tab-theory" class="tab-panel">
+        <div class="wrap" style="max-width:860px">
+            <div class="panel">
+                <div class="ph"><span class="pt"><span class="dot" style="background:var(--amber)"></span>📖 Teori PDA —
+                        Model Flowchart</span></div>
+                <div class="pb" style="line-height:1.9;font-size:13px;color:var(--text2)">
+                    <h3 style="color:var(--text);font-size:15px;margin-bottom:8px">Apa itu PDA Flowchart?</h3>
+                    <p>PDA (Pushdown Automata) adalah mesin komputasi yang memiliki <strong
+                            style="color:var(--blue)">memori tambahan berupa stack</strong>. Model flowchart
+                        menggambarkan alur kerja secara visual dengan node START, READ, PUSH, POP, ACCEPT, REJECT.</p>
+                    <div
+                        style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;margin:12px 0">
+                        <strong style="color:var(--amber)">Tipe Node:</strong><br><br>
+                        <span style="color:var(--green)">● START</span> — Titik masuk, oval.<br>
+                        <span style="color:var(--amber)">◆ READ</span> — Diamond. Baca satu karakter. Cabang keluar
+                        berlabel kondisi (a/b/X/λ).<br>
+                        <span style="color:var(--blue)">■ PUSH x</span> — Kotak. Push simbol x ke stack.<br>
+                        <span style="color:var(--red)">■ POP</span> — Kotak. Pop simbol dari top stack.<br>
+                        <span style="color:var(--green)">● ACCEPT</span> — Oval ganda. Diterima jika input habis di
+                        sini.<br>
+                        <span style="color:var(--red)">● REJECT</span> — Oval. Ditolak secara eksplisit.
+                    </div>
+                    <h3 style="color:var(--text);font-size:15px;margin:14px 0 8px">Cara Kerja Stack</h3>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:8px 0">
+                        <div
+                            style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px">
+                            <div style="color:var(--green);font-weight:700;margin-bottom:4px">PUSH</div>
+                            <div style="font-size:11px">Letakkan simbol di paling atas stack.</div>
+                        </div>
+                        <div
+                            style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px">
+                            <div style="color:var(--red);font-weight:700;margin-bottom:4px">POP</div>
+                            <div style="font-size:11px">Hapus dan ambil simbol dari top stack.</div>
+                        </div>
+                        <div
+                            style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px">
+                            <div style="color:var(--amber);font-weight:700;margin-bottom:4px">READ</div>
+                            <div style="font-size:11px">Baca karakter, pilih cabang sesuai karakter.</div>
+                        </div>
+                    </div>
+                    <h3 style="color:var(--text);font-size:15px;margin:14px 0 8px">Contoh: Palindrome sXsᴿ</h3>
+                    <p>String <span style="font-family:var(--mono);color:var(--amber)">abXba</span> diterima:</p>
+                    <div
+                        style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px;margin:8px 0">
+                        START → READ(a)→PUSH a → READ(b)→PUSH b → READ(X)<br>
+                        → READ(b)→POP[b✓] → READ(a)→POP[a✓] → λ→POP[Z] → ACCEPT ✅
+                    </div>
+                    <h3 style="color:var(--text);font-size:15px;margin:14px 0 8px">Tips Membuat PDA Flowchart</h3>
+                    <ul style="padding-left:18px;line-height:2">
+                        <li>Mulai selalu dengan node <b style="color:var(--green)">START</b></li>
+                        <li>Node <b style="color:var(--amber)">READ</b> harus punya edge untuk setiap kemungkinan
+                            karakter</li>
+                        <li>Node <b style="color:var(--blue)">PUSH</b> dan <b style="color:var(--red)">POP</b> hanya
+                            satu edge keluar</li>
+                        <li>Gunakan <b>λ</b> untuk ε-transition (tidak konsumsi input)</li>
+                        <li>Tambahkan <b style="color:var(--green)">ACCEPT</b> di akhir jalur yang valid</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var nodes = [], edges = [];
+
+        var NODE_COLORS = {
+            start: { fill: 'rgba(62,207,142,.15)', stroke: '#3ecf8e', text: '#3ecf8e' },
+            read: { fill: 'rgba(245,166,35,.12)', stroke: '#f5a623', text: '#f5a623' },
+            push: { fill: 'rgba(91,141,238,.13)', stroke: '#5b8dee', text: '#5b8dee' },
+            pop: { fill: 'rgba(240,108,108,.13)', stroke: '#f06c6c', text: '#f06c6c' },
+            accept: { fill: 'rgba(62,207,142,.15)', stroke: '#3ecf8e', text: '#3ecf8e' },
+            reject: { fill: 'rgba(240,108,108,.13)', stroke: '#f06c6c', text: '#f06c6c' }
+        };
+        var NODE_W = 90, NODE_H = 44;
+        var activeNodeId = null;
+        var activeEdge = null;
+
+        function getNode(id) { return nodes.find(function (n) { return n.id === id; }); }
+        function getEdges(fromId) { return edges.filter(function (e) { return e.from === fromId; }); }
+
+        function simulate(inputStr) {
+            var startNode = nodes.find(function (n) { return n.type === 'start'; });
+            if (!startNode) return { accepted: false, trace: [], error: 'No START node' };
+            var queue = [{ nodeId: startNode.id, input: inputStr.split(''), stack: ['Z'], trace: [], steps: 0 }];
+            var visited = new Set();
+            var bestTrace = [];
+            var maxSteps = 5000;
+            while (queue.length > 0 && maxSteps--> 0) {
+                var cfg = queue.pop();
+                var key = cfg.nodeId + '|' + cfg.input.join('') + '|' + cfg.stack.join(',');
+                if (visited.has(key)) continue;
+                visited.add(key);
+                if (cfg.trace.length > bestTrace.length) bestTrace = cfg.trace;
+                var nd = getNode(cfg.nodeId);
+                if (!nd) continue;
+                if (nd.type === 'accept') {
+                    if (cfg.input.length === 0) return { accepted: true, trace: cfg.trace };
+                    continue;
+                }
+                if (nd.type === 'reject') continue;
+                var ex = getEdges(nd.id);
+                if (nd.type === 'start') {
+                    ex.forEach(function (e) {
+                        var entry = { step: cfg.trace.length + 1, from: nd.id, to: e.to, char: '', stackBefore: [...cfg.stack], inputBefore: [...cfg.input], inputAfter: [...cfg.input], stackAfter: [...cfg.stack], action: 'START → ' + e.to };
+                        queue.push({ nodeId: e.to, input: [...cfg.input], stack: [...cfg.stack], trace: [...cfg.trace, entry], steps: cfg.steps + 1 });
+                    });
+                    continue;
+                }
+                if (nd.type === 'push') {
+                    var sym = nd.label || '?';
+                    var ns = [...cfg.stack, sym];
+                    ex.forEach(function (e) {
+                        var entry = { step: cfg.trace.length + 1, from: nd.id, to: e.to, char: '', stackBefore: [...cfg.stack], inputBefore: [...cfg.input], inputAfter: [...cfg.input], stackAfter: ns, action: "PUSH '" + sym + "'" };
+                        queue.push({ nodeId: e.to, input: [...cfg.input], stack: ns, trace: [...cfg.trace, entry], steps: cfg.steps + 1 });
+                    });
+                    continue;
+                }
+                if (nd.type === 'pop') {
+                    if (cfg.stack.length === 0) continue;
+                    var popped = cfg.stack[cfg.stack.length - 1];
+                    var expected = (nd.label || '').trim();
+                    if (expected && expected !== 'λ' && expected !== 'ε' && popped !== expected) {
+                        continue;
+                    }
+                    var ns2 = cfg.stack.slice(0, -1);
+                    ex.forEach(function (e) {
+                        var ok = !e.label || e.label === popped || e.label === 'λ' || e.label === 'ε' || e.label === '';
+                        if (!ok) return;
+                        var entry = { step: cfg.trace.length + 1, from: nd.id, to: e.to, char: '', stackBefore: [...cfg.stack], inputBefore: [...cfg.input], inputAfter: [...cfg.input], stackAfter: ns2, action: "POP '" + popped + "'" };
+                        queue.push({ nodeId: e.to, input: [...cfg.input], stack: ns2, trace: [...cfg.trace, entry], steps: cfg.steps + 1 });
+                    });
+                    continue;
+                }
+                if (nd.type === 'read') {
+                    ex.forEach(function (e) {
+                        var lbl = (e.label || '').trim();
+                        if (lbl === '' || lbl === 'λ' || lbl === 'ε') {
+                            var entry = { step: cfg.trace.length + 1, from: nd.id, to: e.to, char: 'λ', stackBefore: [...cfg.stack], inputBefore: [...cfg.input], inputAfter: [...cfg.input], stackAfter: [...cfg.stack], action: 'READ λ (ε)' };
+                            queue.push({ nodeId: e.to, input: [...cfg.input], stack: [...cfg.stack], trace: [...cfg.trace, entry], steps: cfg.steps + 1 });
+                        } else {
+                            var lbls = lbl.split(',').map(function (s) { return s.trim(); });
+                            if (cfg.input.length > 0 && lbls.indexOf(cfg.input[0]) >= 0) {
+                                var c = cfg.input[0], ni = cfg.input.slice(1);
+                                var entry = { step: cfg.trace.length + 1, from: nd.id, to: e.to, char: c, stackBefore: [...cfg.stack], inputBefore: [...cfg.input], inputAfter: ni, stackAfter: [...cfg.stack], action: "READ '" + c + "'" };
+                                queue.push({ nodeId: e.to, input: ni, stack: [...cfg.stack], trace: [...cfg.trace, entry], steps: cfg.steps + 1 });
+                            }
+                        }
+                    });
+                }
+            }
+            return { accepted: false, trace: bestTrace };
+        }
+
+        function nodeDisplayLabel(n) {
+            if (n.type === 'push') return 'PUSH ' + (n.label || '?');
+            if (n.type === 'pop') return 'POP' + (n.label ? ' ' + n.label : '');
+            if (n.type === 'start') return 'START';
+            if (n.type === 'accept') return 'ACCEPT';
+            if (n.type === 'reject') return 'REJECT';
+            return 'READ';
+        }
+
+        function drawFlowchart(canvasId, highlightId) {
+            var canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            var dpr = window.devicePixelRatio || 1;
+            var W = canvas.offsetWidth || 600;
+            var H = canvas.height / dpr;
+            canvas.width = W * dpr;
+            ctx.scale(dpr, dpr);
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#0e1118';
+            ctx.fillRect(0, 0, W, H);
+            if (nodes.length === 0) {
+                ctx.fillStyle = '#4a5470'; ctx.font = '13px Segoe UI'; ctx.textAlign = 'center';
+                ctx.fillText('Belum ada node — tambahkan di Builder atau pilih Preset', W / 2, H / 2);
+                return;
+            }
+            edges.forEach(function (e) {
+                var fn = getNode(e.from), tn = getNode(e.to);
+                var isHighlighted = activeEdge && activeEdge.from === e.from && activeEdge.to === e.to;
+                if (fn && tn) drawArrow(ctx, fn, tn, e.label || '', W, H, isHighlighted);
+            });
+            nodes.forEach(function (n) { drawNode(ctx, n, n.id === highlightId); });
+        }
+
+        function drawNode(ctx, n, hl) {
+            var c = NODE_COLORS[n.type] || NODE_COLORS.read;
+            var x = n.x, y = n.y, w = NODE_W, h = NODE_H;
+            var lbl = nodeDisplayLabel(n);
+            ctx.save();
+            if (hl) { ctx.shadowColor = c.stroke; ctx.shadowBlur = 20; }
+            if (n.type === 'read') {
+                var hw = w / 2 + 10, hh = h / 2 + 4;
+                ctx.beginPath();
+                ctx.moveTo(x, y - hh); ctx.lineTo(x + hw, y); ctx.lineTo(x, y + hh); ctx.lineTo(x - hw, y);
+                ctx.closePath();
+                ctx.fillStyle = hl ? c.fill.replace(/[\d.]+\)$/, '0.32)') : c.fill;
+                ctx.fill(); ctx.strokeStyle = c.stroke; ctx.lineWidth = hl ? 2.5 : 1.5; ctx.stroke();
+            } else if (n.type === 'start' || n.type === 'accept' || n.type === 'reject') {
+                ctx.beginPath(); ctx.ellipse(x, y, w / 2, h / 2, 0, 0, Math.PI * 2);
+                ctx.fillStyle = hl ? c.fill.replace(/[\d.]+\)$/, '0.32)') : c.fill;
+                ctx.fill(); ctx.strokeStyle = c.stroke; ctx.lineWidth = hl ? 2.5 : 1.5; ctx.stroke();
+                if (n.type === 'accept') { ctx.beginPath(); ctx.ellipse(x, y, w / 2 - 6, h / 2 - 6, 0, 0, Math.PI * 2); ctx.strokeStyle = c.stroke; ctx.lineWidth = 1; ctx.stroke(); }
+            } else {
+                rrect(ctx, x - w / 2, y - h / 2, w, h, 7);
+                ctx.fillStyle = hl ? c.fill.replace(/[\d.]+\)$/, '0.3)') : c.fill;
+                ctx.fill(); ctx.strokeStyle = c.stroke; ctx.lineWidth = hl ? 2.5 : 1.5; ctx.stroke();
+            }
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = c.text; ctx.font = (hl ? '700 ' : '600 ') + '12px Segoe UI';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(lbl, x, y);
+            ctx.restore();
+        }
+
+        function rrect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        function edgePt(n, dir) {
+            var w = NODE_W, h = NODE_H;
+            if (n.type === 'read') { var hw = w / 2 + 10, hh = h / 2 + 4; if (dir === 'top') return { x: n.x, y: n.y - hh }; if (dir === 'bottom') return { x: n.x, y: n.y + hh }; if (dir === 'left') return { x: n.x - hw, y: n.y }; return { x: n.x + hw, y: n.y }; }
+            if (n.type === 'start' || n.type === 'accept' || n.type === 'reject') { if (dir === 'top') return { x: n.x, y: n.y - h / 2 }; if (dir === 'bottom') return { x: n.x, y: n.y + h / 2 }; if (dir === 'left') return { x: n.x - w / 2, y: n.y }; return { x: n.x + w / 2, y: n.y }; }
+            if (dir === 'top') return { x: n.x, y: n.y - h / 2 }; if (dir === 'bottom') return { x: n.x, y: n.y + h / 2 }; if (dir === 'left') return { x: n.x - w / 2, y: n.y }; return { x: n.x + w / 2, y: n.y };
+        }
+
+        function bestDirs(fn, tn) {
+            var dx = tn.x - fn.x, dy = tn.y - fn.y, fd, td;
+            if (Math.abs(dx) > Math.abs(dy)) { fd = dx > 0 ? 'right' : 'left'; td = dx > 0 ? 'left' : 'right'; }
+            else { fd = dy > 0 ? 'bottom' : 'top'; td = dy > 0 ? 'top' : 'bottom'; }
+            return { fd: fd, td: td };
+        }
+
+        function drawArrow(ctx, fn, tn, label, W, H, hl) {
+            var bd = bestDirs(fn, tn);
+            var p1 = edgePt(fn, bd.fd), p2 = edgePt(tn, bd.td);
+            ctx.save();
+            if (hl) {
+                ctx.strokeStyle = '#f5a623';
+                ctx.lineWidth = 3;
+                ctx.shadowColor = '#f5a623';
+                ctx.shadowBlur = 10;
+            } else {
+                ctx.strokeStyle = 'rgba(91,141,238,0.4)';
+                ctx.lineWidth = 1.5;
+            }
+            if (fn.id === tn.id) {
+                ctx.moveTo(fn.x + NODE_W / 2, fn.y - 12);
+                ctx.bezierCurveTo(fn.x + NODE_W / 2 + 50, fn.y - 70, fn.x + NODE_W / 2 + 50, fn.y + 20, fn.x + NODE_W / 2, fn.y + 12);
+                ctx.stroke();
+                arrowH(ctx, fn.x + NODE_W / 2 + 30, fn.y + 18, fn.x + NODE_W / 2, fn.y + 12, hl);
+                if (label) {
+                    ctx.fillStyle = hl ? '#f5a623' : 'rgba(245,166,35,0.9)';
+                    ctx.font = hl ? 'bold 11px Segoe UI' : '11px Segoe UI';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(label, fn.x + NODE_W / 2 + 58, fn.y - 20);
+                }
+                ctx.restore();
+                return;
+            }
+            var cx = (p1.x + p2.x) / 2, cy = (p1.y + p2.y) / 2;
+            var ox = (p2.y - p1.y) * 0.07, oy = -(p2.x - p1.x) * 0.07;
+            ctx.moveTo(p1.x, p1.y); ctx.quadraticCurveTo(cx + ox, cy + oy, p2.x, p2.y); ctx.stroke();
+            arrowH(ctx, cx + ox, cy + oy, p2.x, p2.y, hl);
+            if (label) {
+                ctx.fillStyle = hl ? '#f5a623' : 'rgba(245,166,35,0.9)';
+                ctx.font = hl ? 'bold 11px Segoe UI' : '11px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.fillText(label, cx + ox + 6, cy + oy - 7);
+            }
+            ctx.restore();
+        }
+
+        function arrowH(ctx, cx, cy, ex, ey, hl) {
+            var a = Math.atan2(ey - cy, ex - cx), s = 9;
+            ctx.beginPath();
+            ctx.fillStyle = hl ? '#f5a623' : 'rgba(91,141,238,0.9)';
+            ctx.moveTo(ex, ey); ctx.lineTo(ex - s * Math.cos(a - 0.4), ey - s * Math.sin(a - 0.4)); ctx.lineTo(ex - s * Math.cos(a + 0.4), ey - s * Math.sin(a + 0.4));
+            ctx.closePath(); ctx.fill();
+        }
+
+        function renderBuilder() { drawFlowchart('builderCanvas', null); }
+        function renderFlowSim() { drawFlowchart('simCanvas', activeNodeId); }
+
+        function autoLayout() {
+            if (nodes.length === 0) return;
+            var canvas = document.getElementById('builderCanvas');
+            var W = canvas.offsetWidth || 600;
+            var startNode = nodes.find(function (n) { return n.type === 'start'; });
+            var visited = new Set(), levels = [], queue = [startNode ? startNode.id : nodes[0].id];
+            while (queue.length > 0) {
+                levels.push([...queue]);
+                var next = [];
+                queue.forEach(function (id) {
+                    visited.add(id);
+                    getEdges(id).forEach(function (e) { if (!visited.has(e.to)) next.push(e.to); });
+                });
+                queue = [...new Set(next)].filter(function (id) { return !visited.has(id); });
+            }
+            var placed = new Set(levels.flat());
+            nodes.forEach(function (n) { if (!placed.has(n.id)) levels.push([n.id]); });
+            var lH = 95, padTop = 65;
+            levels.forEach(function (lvl, li) {
+                var y = padTop + li * lH;
+                var totalW = lvl.length * (NODE_W + 50) - 50;
+                var startX = Math.max(70, W / 2 - totalW / 2 + NODE_W / 2);
+                lvl.forEach(function (id, ni) {
+                    var n = getNode(id);
+                    if (n) { n.x = startX + ni * (NODE_W + 50); n.y = y; }
+                });
+            });
+            canvas.height = Math.max(440, levels.length * lH + padTop + 70);
+            renderBuilder();
+        }
+
+        function onNodeTypeChange() {
+            var t = document.getElementById('newNodeType').value;
+            var showRow = t === 'push' || t === 'pop';
+            document.getElementById('pushLabelRow').style.display = showRow ? 'block' : 'none';
+            if (showRow) {
+                document.getElementById('pushLabelTitle').textContent = t === 'push' ? 'Simbol yang di-PUSH' : 'Simbol yang di-POP';
+                document.getElementById('pushLabel').placeholder = t === 'push' ? 'a' : 'A';
+            }
+            var cnt = nodes.filter(function (n) { return n.type === t; }).length;
+            var ids = { start: 'start', read: 'read' + (cnt + 1), push: 'push_' + (cnt + 1), pop: 'pop' + (cnt + 1), accept: 'accept', reject: 'reject' };
+            document.getElementById('newNodeId').value = ids[t] || (t + (cnt + 1));
+        }
+
+        function addNode() {
+            var type = document.getElementById('newNodeType').value;
+            var id = document.getElementById('newNodeId').value.trim();
+            var pl = document.getElementById('pushLabel').value.trim();
+            if (!id) { toast('Isi ID node!'); return; }
+            if (nodes.find(function (n) { return n.id === id; })) { toast('ID sudah ada!', 'red'); return; }
+            var canvas = document.getElementById('builderCanvas');
+            var W = canvas.offsetWidth || 600;
+            nodes.push({ id: id, type: type, label: (type === 'push' || type === 'pop') ? pl : '', x: 80 + nodes.length * 110 % (W - 120) + 60, y: 65 + Math.floor(nodes.length * 110 / (W - 120)) * 95 });
+            renderNodeList(); autoLayout(); onNodeTypeChange();
+        }
+
+        function deleteNode(id) {
+            nodes = nodes.filter(function (n) { return n.id !== id; });
+            edges = edges.filter(function (e) { return e.from !== id && e.to !== id; });
+            renderNodeList(); renderEdgeList(); renderBuilder();
+        }
+
+        function renderNodeList() {
+            document.getElementById('nodeCtr').textContent = nodes.length + ' node';
+            var el = document.getElementById('nodeList');
+            if (!nodes.length) { el.innerHTML = '<div class="empty"><div class="ei">📦</div>Belum ada node</div>'; return; }
+            var TT = { start: 'tgreen', read: 'tamber', push: 'tblue', pop: 'tred', accept: 'tgreen', reject: 'tred' };
+            el.innerHTML = nodes.map(function (n) {
+                return '<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:8px"><span class="tag ' + (TT[n.type] || 'tgray') + '">' + n.type.toUpperCase() + '</span><span style="font-family:var(--mono);font-size:12px">' + n.id + '</span>' + (n.label ? '<span style="font-size:11px;color:var(--text3)">' + n.label + '</span>' : '') + '</div><button class="btn btn-red btn-xs" onclick="deleteNode(\'' + n.id + '\')">✕</button></div>';
+            }).join('');
+        }
+
+        function addEdge() {
+            var from = document.getElementById('edgeFrom').value.trim();
+            var to = document.getElementById('edgeTo').value.trim();
+            var label = document.getElementById('edgeLabel').value.trim();
+            if (!from || !to) { toast('Isi From dan To!'); return; }
+            if (!getNode(from)) { toast('Node "' + from + '" tidak ada!', 'red'); return; }
+            if (!getNode(to)) { toast('Node "' + to + '" tidak ada!', 'red'); return; }
+            edges.push({ from: from, to: to, label: label });
+            renderEdgeList(); renderBuilder();
+            document.getElementById('edgeLabel').value = '';
+        }
+
+        function deleteEdge(i) { edges.splice(i, 1); renderEdgeList(); renderBuilder(); }
+        function clearEdges() { edges = []; renderEdgeList(); renderBuilder(); }
+
+        function renderEdgeList() {
+            document.getElementById('edgeCtr').textContent = edges.length + ' edge';
+            var el = document.getElementById('edgeList');
+            if (!edges.length) { el.innerHTML = '<div class="empty"><div class="ei">🔗</div>Belum ada edge</div>'; return; }
+            el.innerHTML = edges.map(function (e, i) {
+                return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-family:var(--mono);font-size:12px;color:var(--text2)"><span style="color:var(--blue)">' + e.from + '</span> → <span style="color:var(--green)">' + e.to + '</span>' + (e.label ? '<span style="color:var(--amber);margin-left:8px">[' + e.label + ']</span>' : '') + '</span><button class="btn btn-red btn-xs" onclick="deleteEdge(' + i + ')">✕</button></div>';
+            }).join('');
+        }
+
+        function clearAll() { nodes = []; edges = []; renderNodeList(); renderEdgeList(); renderBuilder(); }
+
+        function saveAndApply() { renderFlowSim(); switchTab('sim'); toast('✅ PDA diterapkan!', 'green'); }
+
+        var simTrace = [], simStep = 0, autoTimer = null;
+
+        function onStrChange() {
+            var v = document.getElementById('inputStr').value;
+            document.getElementById('charCtr').textContent = v.length + ' karakter';
+            renderTape(v, -1);
+            document.getElementById('tapeWrap').style.display = v ? 'block' : 'none';
+        }
+
+        function runSim() {
+            clearInterval(autoTimer);
+            var str = document.getElementById('inputStr').value.trim();
+            if (!nodes.find(function (n) { return n.type === 'start'; })) { toast('Tidak ada node START! Pilih preset atau tambahkan node.', 'red'); return; }
+            var res = simulate(str);
+            simTrace = res.trace; simStep = simTrace.length;
+            activeNodeId = simTrace.length > 0 ? simTrace[simTrace.length - 1].to : null;
+            activeEdge = simTrace.length > 0 ? simTrace[simTrace.length - 1] : null;
+            renderFlowSim();
+            showVerdict(res.accepted, str);
+            renderTrace(res.trace);
+            var lastStack = simTrace.length > 0 ? simTrace[simTrace.length - 1].stackAfter : ['Z'];
+            updateStackViz(lastStack);
+            renderTape(str, str.length);
+            document.getElementById('remainInput').textContent = '(selesai)';
+            updateActiveNode(activeNodeId || '—', res.accepted ? '✅ ACCEPT' : '❌ REJECT');
+            document.getElementById('stepCtrl').style.display = 'none';
+        }
+
+        function showVerdict(acc, str) {
+            var el = document.getElementById('verdict');
+            el.className = 'verdict show ' + (acc ? 'v-acc' : 'v-rej');
+            document.getElementById('vIcon').textContent = acc ? '✅' : '❌';
+            document.getElementById('vTitle').textContent = acc ? 'ACCEPTED' : 'REJECTED';
+            document.getElementById('vSub').textContent = acc ? 'String "' + (str || 'ε') + '" diterima oleh PDA' : 'String "' + (str || 'ε') + '" ditolak oleh PDA';
+        }
+
+        function renderTrace(trace) {
+            var log = document.getElementById('traceLog');
+            if (!trace.length) { log.innerHTML = '<div class="empty"><div class="ei">⚠️</div>Tidak ada transisi yang dieksekusi</div>'; return; }
+            var cols = '24px 80px 90px 110px 1fr';
+            log.innerHTML = '<div class="trow" style="grid-template-columns:' + cols + ';background:var(--bg3)"><span style="font-size:10px;color:var(--text3)">#</span><span style="font-size:10px;color:var(--text3)">NODE</span><span style="font-size:10px;color:var(--text3)">INPUT SISA</span><span style="font-size:10px;color:var(--text3)">STACK</span><span style="font-size:10px;color:var(--text3)">AKSI</span></div>' +
+                trace.map(function (t) {
+                    return '<div class="trow" style="grid-template-columns:' + cols + '"><span style="color:var(--text3)">' + t.step + '</span><span style="color:var(--blue);font-weight:700">' + t.to + '</span><span style="color:var(--amber)">' + (t.inputAfter.join('') || 'ε') + '</span><span style="color:var(--green)">' + (t.stackAfter.slice().reverse().join('') || '∅') + '</span><span style="color:var(--text2);font-size:10px">' + t.action + '</span></div>';
+                }).join('');
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updateStackViz(stack) {
+            document.getElementById('stackCtr').textContent = stack.length + ' item';
+            document.getElementById('stackViz').innerHTML = '<div class="sb">⊥ bottom</div>' + stack.map(function (s) { return '<div class="si">' + s + '</div>'; }).join('');
+        }
+
+        function updateActiveNode(id, lbl) {
+            document.getElementById('activeNode').textContent = id;
+            document.getElementById('activeNodeLbl').textContent = lbl;
+            var n = getNode(id);
+            document.getElementById('activeNode').style.color = n ? (NODE_COLORS[n.type] || NODE_COLORS.read).text : 'var(--blue)';
+        }
+
+        function renderTape(str, pos) {
+            var viz = document.getElementById('tapeViz');
+            if (!str) { viz.innerHTML = ''; return; }
+            viz.innerHTML = str.split('').map(function (c, i) {
+                var cls = i < pos ? 'done' : (i === pos ? 'cur' : 'pending');
+                return '<div class="tc ' + cls + '">' + c + '</div>';
+            }).join('');
+        }
+
+        function clearTrace() { document.getElementById('traceLog').innerHTML = '<div class="empty"><div class="ei">🔍</div>Jalankan PDA untuk melihat trace</div>'; }
+
+        function resetSim() {
+            clearInterval(autoTimer);
+            document.getElementById('inputStr').value = '';
+            document.getElementById('charCtr').textContent = '0 karakter';
+            document.getElementById('verdict').className = 'verdict';
+            document.getElementById('tapeWrap').style.display = 'none';
+            document.getElementById('remainInput').textContent = '—';
+            document.getElementById('activeNode').textContent = '—';
+            document.getElementById('activeNodeLbl').textContent = 'belum dimulai';
+            updateStackViz(['Z']); clearTrace();
+            document.getElementById('stepCtrl').style.display = 'none';
+            activeNodeId = null; activeEdge = null; renderFlowSim();
+        }
+
+        function stepInit() {
+            clearInterval(autoTimer);
+            var str = document.getElementById('inputStr').value.trim();
+            if (!nodes.find(function (n) { return n.type === 'start'; })) { toast('Tidak ada node START!', 'red'); return; }
+            var res = simulate(str);
+            simTrace = res.trace; simStep = 0;
+            document.getElementById('stepCtrl').style.display = 'flex';
+            showStepAt(0); updateStepUI();
+        }
+
+        function showStepAt(idx) {
+            var str = document.getElementById('inputStr').value.trim();
+            if (idx <= 0) {
+                activeNodeId = nodes.find(function (n) { return n.type === 'start'; }) ? nodes.find(function (n) { return n.type === 'start'; }).id : null;
+                activeEdge = null;
+                updateStackViz(['Z']); renderTape(str, 0);
+                updateActiveNode(activeNodeId || '—', 'state awal');
+                document.getElementById('remainInput').textContent = str || 'ε';
+                document.getElementById('traceLog').innerHTML = '<div class="empty"><div class="ei">⏭</div>Klik Next untuk mulai</div>';
+                document.getElementById('verdict').className = 'verdict';
+            } else {
+                var t = simTrace[idx - 1]; if (!t) return;
+                activeNodeId = t.to;
+                activeEdge = t;
+                updateStackViz(t.stackAfter);
+                renderTape(str, str.length - t.inputAfter.length);
+                document.getElementById('remainInput').textContent = t.inputAfter.join('') || 'ε';
+                updateActiveNode(t.to, 'Step ' + idx + ': ' + t.action);
+                renderTrace(simTrace.slice(0, idx));
+                if (idx >= simTrace.length) { var res = simulate(str); showVerdict(res.accepted, str); }
+                else document.getElementById('verdict').className = 'verdict';
+            }
+            renderFlowSim();
+        }
+
+        function stepFwd() { if (simStep < simTrace.length) { simStep++; showStepAt(simStep); updateStepUI(); } }
+        function stepBack() { if (simStep > 0) { simStep--; showStepAt(simStep); updateStepUI(); } }
+        function updateStepUI() {
+            var tot = simTrace.length;
+            document.getElementById('stepLbl').textContent = simStep + '/' + tot;
+            document.getElementById('stepBar').style.width = (tot ? simStep / tot * 100 : 0) + '%';
+            document.getElementById('btnBack').disabled = simStep <= 0;
+            document.getElementById('btnFwd').disabled = simStep >= tot;
+        }
+        function stepAuto() { clearInterval(autoTimer); autoTimer = setInterval(function () { if (simStep >= simTrace.length) { clearInterval(autoTimer); return; } stepFwd(); }, 480); }
+
+        function runBatch() {
+            var lines = document.getElementById('batchIn').value.split('\n');
+            var acc = 0, rej = 0;
+            var html = lines.map(function (raw) {
+                var str = raw.trim() === 'ε' ? '' : raw.trim();
+                var res = simulate(str);
+                if (res.accepted) acc++; else rej++;
+                return '<div class="bres ' + (res.accepted ? 'bacc' : 'brej') + '">' + (res.accepted ? '✅' : '❌') + ' <b style="font-family:var(--mono)">"' + (raw.trim() || 'ε') + '"</b><span style="color:' + (res.accepted ? 'var(--green)' : 'var(--red)') + ';">' + (res.accepted ? 'ACCEPTED' : 'REJECTED') + '</span></div>';
+            }).join('');
+            document.getElementById('batchOut').innerHTML = html;
+            document.getElementById('bAcc').textContent = acc;
+            document.getElementById('bRej').textContent = rej;
+            document.getElementById('batchStats').style.display = 'block';
+        }
+
+        var PRESETS = {
+            palindrome: {
+                nodes: [
+                    { id: 'start', type: 'start', label: '', x: 300, y: 60 },
+                    { id: 'read1', type: 'read', label: '', x: 300, y: 150 },
+                    { id: 'push_a', type: 'push', label: 'a', x: 140, y: 150 },
+                    { id: 'push_b', type: 'push', label: 'b', x: 140, y: 240 },
+                    { id: 'read2', type: 'read', label: '', x: 470, y: 150 },
+                    { id: 'pop_a', type: 'pop', label: 'a', x: 620, y: 150 },
+                    { id: 'pop_b', type: 'pop', label: 'b', x: 620, y: 240 },
+                    { id: 'pop_z', type: 'pop', label: 'Z', x: 470, y: 260 },
+                    { id: 'accept', type: 'accept', label: '', x: 300, y: 360 }
+                ],
+                edges: [
+                    { from: 'start', to: 'read1', label: '' },
+                    { from: 'read1', to: 'push_a', label: 'a' },
+                    { from: 'read1', to: 'push_b', label: 'b' },
+                    { from: 'read1', to: 'read2', label: 'X' },
+                    { from: 'push_a', to: 'read1', label: '' },
+                    { from: 'push_b', to: 'read1', label: '' },
+                    { from: 'read2', to: 'pop_a', label: 'a' },
+                    { from: 'read2', to: 'pop_b', label: 'b' },
+                    { from: 'read2', to: 'pop_z', label: 'λ' },
+                    { from: 'pop_a', to: 'read2', label: '' },
+                    { from: 'pop_b', to: 'read2', label: '' },
+                    { from: 'pop_z', to: 'accept', label: 'λ' }
+                ]
+            },
+            anbn: {
+                nodes: [
+                    { id: 'start', type: 'start', label: '', x: 270, y: 60 },
+                    { id: 'read1', type: 'read', label: '', x: 270, y: 150 },
+                    { id: 'push_a', type: 'push', label: 'A', x: 130, y: 150 },
+                    { id: 'read2', type: 'read', label: '', x: 420, y: 150 },
+                    { id: 'pop_a', type: 'pop', label: 'A', x: 420, y: 260 },
+                    { id: 'accept', type: 'accept', label: '', x: 270, y: 350 }
+                ],
+                edges: [
+                    { from: 'start', to: 'read1', label: '' },
+                    { from: 'read1', to: 'push_a', label: 'a' },
+                    { from: 'read1', to: 'read2', label: 'λ' },
+                    { from: 'push_a', to: 'read1', label: '' },
+                    { from: 'read2', to: 'pop_a', label: 'b' },
+                    { from: 'pop_a', to: 'read2', label: '' },
+                    { from: 'read2', to: 'accept', label: 'λ' }
+                ]
+            },
+            balanced: {
+                nodes: [
+                    { id: 'start', type: 'start', label: '', x: 290, y: 60 },
+                    { id: 'read1', type: 'read', label: '', x: 290, y: 150 },
+                    { id: 'push_p', type: 'push', label: 'P', x: 140, y: 150 },
+                    { id: 'pop_p', type: 'pop', label: 'P', x: 440, y: 150 },
+                    { id: 'accept', type: 'accept', label: '', x: 290, y: 290 }
+                ],
+                edges: [
+                    { from: 'start', to: 'read1', label: '' },
+                    { from: 'read1', to: 'push_p', label: '(' },
+                    { from: 'read1', to: 'pop_p', label: ')' },
+                    { from: 'read1', to: 'accept', label: 'λ' },
+                    { from: 'push_p', to: 'read1', label: '' },
+                    { from: 'pop_p', to: 'read1', label: '' }
+                ]
+            },
+            wcwr: {
+                nodes: [
+                    { id: 'start', type: 'start', label: '', x: 300, y: 60 },
+                    { id: 'read1', type: 'read', label: '', x: 300, y: 150 },
+                    { id: 'push_a', type: 'push', label: 'a', x: 140, y: 150 },
+                    { id: 'push_b', type: 'push', label: 'b', x: 140, y: 240 },
+                    { id: 'read2', type: 'read', label: '', x: 470, y: 150 },
+                    { id: 'pop_a', type: 'pop', label: 'a', x: 620, y: 150 },
+                    { id: 'pop_b', type: 'pop', label: 'b', x: 620, y: 240 },
+                    { id: 'accept', type: 'accept', label: '', x: 300, y: 340 }
+                ],
+                edges: [
+                    { from: 'start', to: 'read1', label: '' },
+                    { from: 'read1', to: 'push_a', label: 'a' },
+                    { from: 'read1', to: 'push_b', label: 'b' },
+                    { from: 'read1', to: 'read2', label: 'c' },
+                    { from: 'push_a', to: 'read1', label: '' },
+                    { from: 'push_b', to: 'read1', label: '' },
+                    { from: 'read2', to: 'pop_a', label: 'a' },
+                    { from: 'read2', to: 'pop_b', label: 'b' },
+                    { from: 'read2', to: 'accept', label: 'λ' },
+                    { from: 'pop_a', to: 'read2', label: '' },
+                    { from: 'pop_b', to: 'read2', label: '' }
+                ]
+            },
+            anbncn: {
+                nodes: [
+                    { id: 'start', type: 'start', label: '', x: 300, y: 55 },
+                    { id: 'read1', type: 'read', label: '', x: 300, y: 140 },
+                    { id: 'push_a', type: 'push', label: 'A', x: 150, y: 140 },
+                    { id: 'read2', type: 'read', label: '', x: 450, y: 140 },
+                    { id: 'pop_a', type: 'pop', label: 'A', x: 450, y: 230 },
+                    { id: 'push_b', type: 'push', label: 'B', x: 580, y: 140 },
+                    { id: 'read3', type: 'read', label: '', x: 300, y: 320 },
+                    { id: 'pop_b', type: 'pop', label: 'B', x: 440, y: 320 },
+                    { id: 'accept', type: 'accept', label: '', x: 300, y: 410 }
+                ],
+                edges: [
+                    { from: 'start', to: 'read1', label: '' },
+                    { from: 'read1', to: 'push_a', label: 'a' },
+                    { from: 'read1', to: 'read2', label: 'λ' },
+                    { from: 'push_a', to: 'read1', label: '' },
+                    { from: 'read2', to: 'push_b', label: 'b' },
+                    { from: 'read2', to: 'read3', label: 'λ' },
+                    { from: 'push_b', to: 'pop_a', label: '' },
+                    { from: 'pop_a', to: 'read2', label: '' },
+                    { from: 'read3', to: 'pop_b', label: 'c' },
+                    { from: 'pop_b', to: 'read3', label: '' },
+                    { from: 'read3', to: 'accept', label: 'λ' }
+                ]
+            }
+        };
+
+        function loadPreset(name) {
+            if (!PRESETS[name]) { clearAll(); return; }
+            var p = PRESETS[name];
+            nodes = p.nodes.map(function (n) { return Object.assign({}, n); });
+            edges = p.edges.map(function (e) { return Object.assign({}, e); });
+            renderNodeList(); renderEdgeList();
+            var maxY = Math.max.apply(null, nodes.map(function (n) { return n.y; }));
+            var bc = document.getElementById('builderCanvas');
+            bc.height = Math.max(440, maxY + 90);
+            renderBuilder();
+            saveAndApply();
+        }
+
+        function switchTab(name) {
+            var names = ['sim', 'builder', 'batch', 'theory'];
+            document.querySelectorAll('.tab').forEach(function (t, i) { t.classList.toggle('active', names[i] === name); });
+            document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+            document.getElementById('tab-' + name).classList.add('active');
+            if (name === 'sim') { resizeCanvas('simCanvas', 320); renderFlowSim(); }
+            if (name === 'builder') { resizeCanvas('builderCanvas', 440); renderBuilder(); }
+        }
+
+        function resizeCanvas(id, minH) {
+            var c = document.getElementById(id);
+            var maxY = nodes.length > 0 ? Math.max.apply(null, nodes.map(function (n) { return n.y; })) : minH - 80;
+            c.height = Math.max(minH, maxY + 90);
+        }
+
+        function toast(msg, type) {
+            type = type || 'amber';
+            var col = { amber: 'var(--amber)', green: 'var(--green)', red: 'var(--red)' }[type] || 'var(--amber)';
+            var el = document.createElement('div');
+            el.style.cssText = 'position:fixed;top:18px;right:18px;background:var(--bg3);border:1px solid ' + col + ';color:' + col + ';border-radius:8px;padding:10px 16px;font-size:12px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:320px;line-height:1.5;';
+            el.textContent = msg; document.body.appendChild(el);
+            setTimeout(function () { el.remove(); }, 2800);
+        }
+
+        window.onload = function () {
+            onNodeTypeChange();
+            loadPreset('palindrome');
+        };
+        window.addEventListener('resize', function () {
+            if (document.getElementById('tab-sim').classList.contains('active')) { resizeCanvas('simCanvas', 320); renderFlowSim(); }
+            if (document.getElementById('tab-builder').classList.contains('active')) { resizeCanvas('builderCanvas', 440); renderBuilder(); }
+        });
+    </script>
+</body>
+
+</html>
